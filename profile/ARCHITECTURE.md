@@ -1,8 +1,10 @@
 # Arcane Labs — Architecture
 
-Arcane Labs ships **local-first, bring-your-own-AI, contract-first** software. No servers. User's data lives on their own Drive. User's AI subscription does the compute. This document names the org-wide patterns that operationalize that posture so you can see them at a glance without reading five repos.
+Arcane Labs ships **contract-first, ADR-driven, AI-augmented** software. This document names the org-wide engineering patterns that recur across projects so you can see them at a glance without reading five repos.
 
-These are **conventions**, not suggestions. Every active Arcane Labs repo is expected to conform; deviations are documented per-repo as ADRs that reference this file.
+Individual products in the portfolio have their own architectural choices — some are local-first zero-server (Vael), some are practitioner-mediated SaaS (Longeviti, post-pivot), some are developer CLIs (Forge, Shellcraft). The engineering discipline is shared; the architecture of each product is chosen for its problem.
+
+These are **conventions**, not suggestions. Every active Arcane Labs repo is expected to conform to the engineering patterns below; deviations are documented per-repo as ADRs that reference this file.
 
 ---
 
@@ -10,11 +12,11 @@ These are **conventions**, not suggestions. Every active Arcane Labs repo is exp
 
 ### 1. Contract-first schemas
 
-**What:** Every app that writes artifacts to Drive or exchanges data with another component defines a JSON Schema for every such file. Schemas are the contract; every read is validated; mismatches surface a visible error, never silent corruption.
+**What:** Every component that produces or consumes structured data defines a JSON Schema (or equivalent) for every such artifact. Schemas are the contract; every read is validated; mismatches surface a visible error, never silent corruption.
 
-**Why:** When multiple implementations (skills, apps, forks) touch the same file, the schema is the only source of truth that doesn't drift. Schema-validated I/O makes forking safe — a fork can change the *how* freely as long as the *shape* holds.
+**Why:** When multiple implementations (skills, apps, forks, future servers) touch the same artifact, the schema is the only source of truth that doesn't drift. Schema-validated I/O makes evolution safe — a new implementation can change the *how* freely as long as the *shape* holds. Every generated file carries a `schema_version` so consumers can reject incompatible versions cleanly.
 
-**Canonical example:** [`longeviti-framework/schemas/`](https://github.com/arcanelabsio/longeviti-framework/tree/main/schemas) — `weekly_plan`, `profile`, `coaching_session`, `rules` schemas, plus [`ALIGNMENT.md`](https://github.com/arcanelabsio/longeviti-framework/blob/main/schemas/ALIGNMENT.md) explaining the app-consumer contract. Every generated file carries `schema_version`; the app defaults and validates.
+**Canonical example:** [`longeviti-framework/schemas/`](https://github.com/arcanelabsio/longeviti-framework/tree/main/schemas) — `weekly_plan`, `profile`, `coaching_session`, `rules` schemas, plus [`ALIGNMENT.md`](https://github.com/arcanelabsio/longeviti-framework/blob/main/schemas/ALIGNMENT.md) explaining the producer-consumer contract. Every generated file carries `schema_version`; consumers validate and reject mismatches. Survives the architectural pivot unchanged because it describes shape, not transport. _(Internal to the Arcane Labs org.)_
 
 ### 2. Planner / Executor split
 
@@ -22,15 +24,15 @@ These are **conventions**, not suggestions. Every active Arcane Labs repo is exp
 
 **Why:** Debugging an AI-driven system is tractable only if the "what the model decided" and "what the machine did" are two artifacts you can compare. The split is also a safety boundary — executors fail closed on malformed directives from a poisoned planner input.
 
-**Canonical example:** Longeviti's **ELARA → ATLAS** pipeline. ELARA reads reports and tracking data, derives coaching insights, and emits structured directives. ATLAS takes directives only (never raw reports) and writes plans + rules to Drive. See [longeviti-framework/README.md](https://github.com/arcanelabsio/longeviti-framework#skills) and [ADR-002](https://github.com/arcanelabsio/longeviti-framework/blob/main/docs/adr/002-atlas-elara-pipeline-separation.md).
+**Canonical example:** Longeviti's **ELARA → ATLAS** pipeline. ELARA reads reports and tracking data, derives coaching insights, and emits structured directives. ATLAS takes directives only (never raw reports) and writes plans + rules to persistent storage. See [longeviti-framework/README.md](https://github.com/arcanelabsio/longeviti-framework#skills) and [ADR-002](https://github.com/arcanelabsio/longeviti-framework/blob/main/docs/adr/002-atlas-elara-pipeline-separation.md). The separation survives the runtime move from local-skill execution to server-side services unchanged. _(Internal to the Arcane Labs org.)_
 
-### 3. Sandboxed `.app/<appName>/` paths
+### 3. Explicit OAuth scope + path validation at the storage boundary
 
-**What:** Arcane Labs apps that store data in a user's Google Drive do so under `{DRIVE_BASE}/.app/<appName>/`. Path construction is anchored at this root; no app reads or writes outside its sandbox. The spec lives at [`longeviti-framework/docs/arcane-labs-drive-sandbox-spec.md`](https://github.com/arcanelabsio/longeviti-framework/blob/main/docs/arcane-labs-drive-sandbox-spec.md).
+**What:** Apps that store data in a user's Google Drive choose their OAuth scope explicitly (full `drive`, `drive.file`, or `drive.appdata`) based on architectural need, and validate every path at the I/O boundary — rejecting traversal, absolute paths, empty segments, and escaping query strings. Each scope carries different visibility semantics and different compliance obligations; picking wrong costs years of CASA audits or breaks multi-writer flows silently.
 
-**Why:** Multiple Arcane Labs apps can coexist on the same Drive. Uninstalling one doesn't touch another. Third parties can claim "Arcane-Labs-compatible Drive layout" and plug in. Path traversal is structurally prevented at the I/O boundary, not defended after the fact.
+**Why:** OAuth scope is one of the highest-leverage architectural decisions a Drive-backed app makes. Encoding it in the adapter's API (rather than leaving it implicit in which OAuth scopes the auth client requested) makes the decision visible in code review. Path validation is uniform regardless of scope, so injection and traversal are prevented structurally at every call site.
 
-**Canonical example:** `drive_sync_flutter` (enforces in code via `SandboxedDrivePath`), consumed by Longeviti.
+**Canonical example:** [`drive_sync_flutter`](https://github.com/arcanelabsio/drive_sync_flutter) — three named constructors (`userDrive`, `appFiles`, `appData`) map to the three OAuth scopes; `SandboxValidator` enforces path shape uniformly.
 
 ### 4. Managed-block installs
 
@@ -49,8 +51,8 @@ These are **conventions**, not suggestions. Every active Arcane Labs repo is exp
 **Why:** The tooling is the wrong place to encode rationale. ADRs are the archaeology layer that keeps the codebase legible years later.
 
 **Canonical examples:**
-- Project-level: [`longeviti-framework/docs/adr/`](https://github.com/arcanelabsio/longeviti-framework/tree/main/docs/adr), [`forge/docs/adr/`](https://github.com/arcanelabsio/forge/tree/main/docs/adr), [`vael/docs/adr/`](https://github.com/arcanelabsio/vael/tree/main/docs/adr), [`shellcraft/docs/adr/`](https://github.com/arcanelabsio/shellcraft/tree/main/docs/adr).
-- Pattern-level: the [**arcanelabsio-patterns**](https://github.com/arcanelabsio/arcanelabsio-patterns) registry — reusable patterns that project ADRs can reference via `applies_pattern:`. This is the two-tier governance: patterns evolve slowly, decisions freely.
+- Project-level: [`forge/docs/adr/`](https://github.com/arcanelabsio/forge/tree/main/docs/adr), [`vael/docs/adr/`](https://github.com/arcanelabsio/vael/tree/main/docs/adr), [`shellcraft/docs/adr/`](https://github.com/arcanelabsio/shellcraft/tree/main/docs/adr), [`longeviti-framework/docs/adr/`](https://github.com/arcanelabsio/longeviti-framework/tree/main/docs/adr).
+- Pattern-level: the [**arcanelabsio-patterns**](https://github.com/arcanelabsio/arcanelabsio-patterns) registry — reusable patterns that project ADRs can reference via `applies_pattern:`. This is the two-tier governance: patterns evolve slowly, decisions freely. _(Registry is internal to the Arcane Labs org.)_
 
 ### 6. Live-fetch, read-only execution
 
@@ -60,15 +62,13 @@ These are **conventions**, not suggestions. Every active Arcane Labs repo is exp
 
 **Canonical example:** Forge. See [ADR-0002](https://github.com/arcanelabsio/forge/blob/main/docs/adr/0002-direct-gh-execution-no-bundled-runtime.md).
 
-### 7. Privacy by architecture, not by convention
+### 7. Privacy boundary as a project-level architectural choice
 
-**What:** When an app handles sensitive data, that data physically does not exist in the repo tree — it lives in user-owned cloud storage or a local encrypted store. Accidental commits are structurally impossible, not just against policy.
+**What:** Each product picks where the privacy boundary lives — local device, encrypted transport, or server-side with standard compliance — and documents that choice as an ADR. The org does not impose a single privacy posture across the portfolio; it imposes the requirement that the boundary is **chosen deliberately and written down**.
 
-**Why:** Discipline is fragile; architecture is durable. A publicly forkable repo that physically cannot contain personal data removes a whole class of leak.
+**Why:** A family finance app, a developer CLI, and a practitioner-mediated health platform have fundamentally different threat models. Forcing one privacy architecture across all of them produces bad compromises. The discipline is in the decision being explicit, not in the decision being uniform.
 
-**Canonical examples:**
-- **Longeviti** — health data lives on user's Drive, never in the repo. See [ADR-001](https://github.com/arcanelabsio/longeviti-framework/blob/main/docs/adr/001-google-drive-as-data-layer.md).
-- **Vael** — finance data encrypted client-side with AES-256-GCM using a family-derived key; Drive is blind ciphertext storage. See [ADR-0001](https://github.com/arcanelabsio/vael/blob/main/docs/adr/0001-drive-as-blind-encrypted-transport.md).
+**Canonical example:** **Vael** — finance data encrypted client-side with AES-256-GCM using a family-derived key; Drive is blind ciphertext storage, servers are architecturally absent. See [ADR-0001](https://github.com/arcanelabsio/vael/blob/main/docs/adr/0001-drive-as-blind-encrypted-transport.md). Other products make different choices appropriate to their domain.
 
 ### 8. AGENTS.md as the authoritative AI-assistant guide
 
@@ -76,7 +76,7 @@ These are **conventions**, not suggestions. Every active Arcane Labs repo is exp
 
 **Why:** Assistants that read project rules shouldn't diverge per tool. AGENTS.md is emerging as the cross-tool convention; pinning on it avoids a per-tool fan-out.
 
-**Canonical examples:** [`forge/AGENTS.md`](https://github.com/arcanelabsio/forge/blob/main/AGENTS.md), [`vael/AGENTS.md`](https://github.com/arcanelabsio/vael/blob/main/AGENTS.md), [`shellcraft/AGENTS.md`](https://github.com/arcanelabsio/shellcraft/blob/main/AGENTS.md), [`longeviti-framework/AGENTS.md`](https://github.com/arcanelabsio/longeviti-framework/blob/main/AGENTS.md).
+**Canonical examples:** [`forge/AGENTS.md`](https://github.com/arcanelabsio/forge/blob/main/AGENTS.md), [`vael/AGENTS.md`](https://github.com/arcanelabsio/vael/blob/main/AGENTS.md), [`shellcraft/AGENTS.md`](https://github.com/arcanelabsio/shellcraft/blob/main/AGENTS.md), [`drive_sync_flutter`](https://github.com/arcanelabsio/drive_sync_flutter), [`longeviti-framework/AGENTS.md`](https://github.com/arcanelabsio/longeviti-framework/blob/main/AGENTS.md).
 
 ---
 
@@ -95,13 +95,13 @@ This separation is deliberate: projects stay free to diverge from a pattern; div
 
 | Pattern | Canonical implementation |
 |---|---|
-| Contract-first schemas | [longeviti-framework](https://github.com/arcanelabsio/longeviti-framework) |
-| Planner / Executor split | [longeviti-framework](https://github.com/arcanelabsio/longeviti-framework) (ELARA → ATLAS) |
-| Sandboxed Drive paths | `drive_sync_flutter` + [longeviti-framework spec](https://github.com/arcanelabsio/longeviti-framework/blob/main/docs/arcane-labs-drive-sandbox-spec.md) |
+| Contract-first schemas | Longeviti data framework (JSON schemas for plans, profiles, coaching, rules) |
+| Planner / Executor split | Longeviti's ELARA → ATLAS pipeline |
+| OAuth scope + path validation at the storage boundary | [drive_sync_flutter](https://github.com/arcanelabsio/drive_sync_flutter) |
 | Managed-block installs | [shellcraft](https://github.com/arcanelabsio/shellcraft) (dotfiles), [forge](https://github.com/arcanelabsio/forge) (AI-assistant configs) |
 | ADR discipline | All repos; pattern registry at [arcanelabsio-patterns](https://github.com/arcanelabsio/arcanelabsio-patterns) |
 | Live-fetch, read-only | [forge](https://github.com/arcanelabsio/forge) |
-| Privacy by architecture | [longeviti-framework](https://github.com/arcanelabsio/longeviti-framework) (Drive layer), [vael](https://github.com/arcanelabsio/vael) (client-side encryption) |
+| Privacy boundary as a project-level choice | [vael](https://github.com/arcanelabsio/vael) (client-side encryption, blind transport) |
 | AGENTS.md authoritative | All repos |
 
 ---
