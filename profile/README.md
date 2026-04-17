@@ -18,6 +18,16 @@ We build software where your data never leaves your infrastructure, where the in
 
 ---
 
+## How we ship it — the architecture
+
+The thesis above is implemented through a small set of org-wide patterns: contract-first schemas, planner/executor split, sandboxed Drive paths, managed-block installs, ADR discipline, live-fetch read-only execution, and privacy-by-architecture. Each pattern has a canonical implementation you can read.
+
+→ **[ARCHITECTURE.md](./ARCHITECTURE.md)** — org-wide patterns, where each one is most faithfully implemented, and the two-tier governance (patterns in [`arcanelabsio-patterns`](https://github.com/arcanelabsio/arcanelabsio-patterns), decisions in each project's `docs/adr/`).
+
+→ **[arcanelabsio/repo-template](https://github.com/arcanelabsio/repo-template)** — click "Use this template" to start a new Arcane Labs repo pre-wired with the conventions above (AGENTS.md, ADR scaffold, SECURITY_MODEL, Conventional Commits).
+
+---
+
 ## What we believe
 
 - **Your data stays yours.** Encryption boundaries, client-side-only processing, cloud providers that see only noise. Not a toggle — an architectural requirement.
