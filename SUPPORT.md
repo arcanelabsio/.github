@@ -42,12 +42,17 @@ Thanks for using an Arcane Labs project. Here's how to find the right support ch
 
 **Do not open a public issue for security vulnerabilities.** Email **security@arcanelabs.info**. See [SECURITY.md](./SECURITY.md) for the full policy.
 
-## General contact
+## Contact directory
 
-- **General inquiries**: apps@arcanelabs.info
-- **Support**: support@arcanelabs.info
-- **Security**: security@arcanelabs.info
-- **Community conduct**: community@arcanelabs.info
+- **Say hello / general inquiries**: hello@arcanelabs.info
+- **Product support**: support@arcanelabs.info
+- **Security vulnerabilities**: security@arcanelabs.info
+- **Privacy / data requests**: privacy@arcanelabs.info
+- **Community & Code of Conduct**: community@arcanelabs.info
+- **Partnerships, business, trademark**: contact@arcanelabs.info
+- **Press & media**: social-apps@arcanelabs.info
+
+Our full contact directory with purposes is at [arcanelabs.info/contact](https://arcanelabs.info/contact/).
 
 ## Response times
 

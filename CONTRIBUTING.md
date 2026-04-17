@@ -59,7 +59,7 @@ Participation is governed by our [Code of Conduct](./CODE_OF_CONDUCT.md). Report
 
 ## Questions
 
-- **General**: open a discussion if the repo has them enabled, or email **apps@arcanelabs.info**
+- **General**: open a discussion if the repo has them enabled, or email **hello@arcanelabs.info**
 - **Security**: see [SECURITY.md](./SECURITY.md) — do not open public issues for vulnerabilities
 - **Support**: see [SUPPORT.md](./SUPPORT.md)
 
