@@ -10,7 +10,7 @@ We build software where your data never leaves your infrastructure, where the in
 
 **[Longeviti](https://longeviti.app)** — a bring-your-own-AI longevity tracking app. Blood work, tracking, and daily logs drive adaptive meal and supplement plans. The app does zero AI compute; your Claude or Codex session reads your reports and writes plans to your own Google Drive against public JSON schemas. &nbsp;·&nbsp; [Framework](https://github.com/arcanelabsio/longeviti-framework) · [Site](https://github.com/arcanelabsio/longeviti-site)
 
-**[Vael](https://github.com/arcanelabsio/vael)** — a privacy-first family finance app for Indian households. Local-first, AES-GCM encrypted, zero-cost. Families share a net-worth view without surrendering data to anyone. Flutter + Drift + Drive-as-encrypted-pipe. 400+ tests, TDD from day one.
+**Vael** — a privacy-first family finance app for Indian households. Local-first, AES-GCM encrypted, zero-cost. Families share a net-worth view without surrendering data to anyone. Flutter + Drift + Drive-as-encrypted-pipe. 400+ tests, TDD from day one. _Source currently private — for access, email [support@arcanelabs.info](mailto:support@arcanelabs.info)._
 
 **[Forge](https://github.com/arcanelabsio/forge)** — a CLI that gives AI coding assistants superpowers over GitHub workflows. One install plugs into Copilot, Claude Code, Codex, and Gemini CLI — PR reviews, discussion analysis, commit coaching. Zero lock-in to any provider.
 
