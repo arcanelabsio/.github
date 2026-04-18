@@ -14,7 +14,9 @@ An independent software studio. We ship focused tools — for personal health, f
 
 **[Shellcraft](https://github.com/arcanelabsio/shellcraft)** — a macOS dev machine bootstrapper. Profile-based package selection and non-destructive dotfile management so you can rebuild your workstation in an hour instead of a weekend.
 
-**[drive_sync_flutter](https://github.com/arcanelabsio/drive_sync_flutter)** — a pub.dev library for bidirectional Google Drive sync with pluggable OAuth scope modes. Used by Vael + available for any Flutter app that needs Drive as a data layer.
+**[cloud_sync](https://github.com/arcanelabsio/cloud_sync)** — a Dart/Flutter monorepo for bidirectional file sync across cloud backends. A storage-agnostic core ([`cloud_sync_core`](https://pub.dev/packages/cloud_sync_core)) plus per-backend adapters for Google Drive ([`cloud_sync_drive`](https://pub.dev/packages/cloud_sync_drive)), AWS S3 + S3-compatibles ([`cloud_sync_s3`](https://pub.dev/packages/cloud_sync_s3)), and Box ([`cloud_sync_box`](https://pub.dev/packages/cloud_sync_box)). Supersedes `drive_sync_flutter`.
+
+**[drive_sync_flutter](https://github.com/arcanelabsio/drive_sync_flutter)** — _frozen at [1.2.0](https://pub.dev/packages/drive_sync_flutter)._ The single-package Google Drive predecessor. New development and new backends live in [`cloud_sync`](https://github.com/arcanelabsio/cloud_sync); see [`cloud_sync_drive`](https://pub.dev/packages/cloud_sync_drive) for the Drive adapter going forward.
 
 ---
 
@@ -30,4 +32,4 @@ Starter template for new Arcane Labs repos: [**arcanelabsio/repo-template**](htt
 
 Solo shop, for now. Built by [@ajitgunturi](https://github.com/ajitgunturi) — R&D engineer, platform & control-plane background, ISB Emerging Leaders alum. If any of this resonates, [let's connect on LinkedIn](https://www.linkedin.com/in/ajitkumargunturi/).
 
-Contributions welcome on the open-source repos (`forge`, `shellcraft`, `drive_sync_flutter`). See each project's `CONTRIBUTING.md`.
+Contributions welcome on the open-source repos (`forge`, `shellcraft`, `cloud_sync`). See each project's `CONTRIBUTING.md`.
