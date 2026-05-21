@@ -20,9 +20,9 @@ You'll receive an acknowledgement within **3 business days**. We aim to provide 
 This policy applies to all repositories under the [`arcanelabsio`](https://github.com/arcanelabsio) organization, including:
 
 - **Longeviti** — app, framework, and documentation site
-- **Vael** — family finance app
 - **Forge** — AI plugin CLI
-- **drive_sync_flutter** — Google Drive sync library
+- **cloud_sync** — Dart/Flutter sync engine + cloud backend adapters (Drive, S3, Box)
+- **drive_sync_flutter** — Google Drive sync library (frozen at 1.2.0; reports still accepted)
 - **Shellcraft** — macOS workstation bootstrapper
 
 ### Out of scope

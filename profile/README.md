@@ -1,14 +1,12 @@
 # arcanelabsio
 
-An independent software studio. We ship focused tools — for personal health, family finance, developer productivity, and the AI-assisted engineering workflow we use ourselves.
+An independent software studio. We ship focused tools — for personal health, developer productivity, and the AI-assisted engineering workflow we use ourselves.
 
 ---
 
 ## What we build
 
-**[Longeviti](https://longeviti.app)** — nutrition coaching, grounded in your health reports. A practitioner-led platform for certified nutritionists and their clients. _Rebuilding the client-facing platform in 2026; [join the waitlist](https://longeviti.app)._
-
-**Vael** — a local-first family finance app for Indian households. Encrypted client-side, synced through Google Drive as blind ciphertext transport — Vael's servers (there are none) literally cannot read your data. _Source currently private — for access, email [support@arcanelabs.info](mailto:support@arcanelabs.info)._
+**[Longeviti](https://longeviti.app)** — nutrition coaching, grounded in your health reports. A practitioner-led platform for certified nutritionists and their clients.
 
 **[Forge](https://github.com/arcanelabsio/forge)** — a CLI that gives AI coding assistants superpowers over GitHub workflows. One install plugs into Copilot, Claude Code, Codex, and Gemini CLI — PR reviews, discussion analysis, commit coaching.
 

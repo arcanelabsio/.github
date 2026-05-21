@@ -10,20 +10,20 @@ Thanks for using an Arcane Labs project. Here's how to find the right support ch
 - **Documentation**: [longeviti.app/docs](https://longeviti.app/docs/)
 - **Framework questions**: [`longeviti-framework` discussions](https://github.com/arcanelabsio/longeviti-framework/discussions) (if enabled) or issues
 
-### Vael
-
-- **Access request** (source currently private): email **support@arcanelabs.info**
-- **Product feedback**: email **support@arcanelabs.info**
-
 ### Forge
 
 - **Issues & bugs**: [`forge` issue tracker](https://github.com/arcanelabsio/forge/issues)
 - **CLI docs**: see the repo README and `docs/` folder
 - **npm package**: [`forge-ai-assist`](https://www.npmjs.com/package/forge-ai-assist)
 
-### drive_sync_flutter
+### cloud_sync
 
-- **Issues & bugs**: [issue tracker](https://github.com/arcanelabsio/drive_sync_flutter/issues)
+- **Issues & bugs**: [issue tracker](https://github.com/arcanelabsio/cloud_sync/issues)
+- **Packages**: [`cloud_sync_core`](https://pub.dev/packages/cloud_sync_core) · [`cloud_sync_drive`](https://pub.dev/packages/cloud_sync_drive) · [`cloud_sync_s3`](https://pub.dev/packages/cloud_sync_s3) · [`cloud_sync_box`](https://pub.dev/packages/cloud_sync_box)
+
+### drive_sync_flutter _(frozen)_
+
+- **Status**: frozen at 1.2.0; new code should use `cloud_sync_drive`. Existing installs still supported.
 - **Package**: [pub.dev/packages/drive_sync_flutter](https://pub.dev/packages/drive_sync_flutter)
 
 ### Shellcraft
